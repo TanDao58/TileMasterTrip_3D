@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] float _radius_check;
+    public Queue<Pawn> pawns = new Queue<Pawn>(8);
+
     private void Awake()
     {
         //Setup android
@@ -12,21 +13,27 @@ public class GameManager : MonoBehaviour
         Application.targetFrameRate = 60;
         QualitySettings.vSyncCount = 0;
     }
+
     private void Update()
     {
         if (Input.GetMouseButtonDown(0))
-            CheckClickPawn(Camera.main.ScreenToWorldPoint(Input.mousePosition), _radius_check);
+            CheckClickPawn(Input.mousePosition);
     }
-    public void CheckClickPawn(Vector3 _checkPos, float radius)
+
+    public void CheckClickPawn(Vector3 _checkPos)
     {
-        Vector3 _convertMouseToCurrent = new Vector3(_checkPos.x, this.transform.position.y, _checkPos.z);
-        Collider[] _checkCol = Physics.OverlapSphere(_convertMouseToCurrent, radius, LayerMask.GetMask("Pawn"));
-        if( _checkCol.Length > 0)
+        Ray ray = Camera.main.ScreenPointToRay(_checkPos);
+        if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, LayerMask.GetMask("Pawn")))
         {
-            IPawnable pawnable = _checkCol[0].GetComponent<IPawnable>();
-            _checkCol[0].GetComponent<Rigidbody>().isKinematic = true;
+            IPawnable pawnable = raycastHit.collider.GetComponent<IPawnable>();
+            pawns.Enqueue(pawnable.CurrentPawn);
+            
+            // setup pawn move
+            raycastHit.collider.GetComponent<Rigidbody>().isKinematic = true;
             pawnable.NotMouseClick = true;
             pawnable.NotRotate = true;
         }
     }
+
+
 }
