@@ -1,0 +1,24 @@
+#
+# Sprite sheet data for Unity.
+#
+# To import these sprites into your Unity project, download "TexturePackerImporter":
+# https://www.codeandweb.com/texturepacker/unity
+#
+# $TexturePacker:SmartUpdate:a16de3cc35b3ddb0bd60487342eff8b2:15eb9f640d9509fb9737e412e46e3efd:185a03b8eeb0f58bff9e62fd49f6451a$
+#
+:format=40300
+:texture=fruitcollections-default.png
+:size=512x512
+:pivotpoints=enabled
+:borders=disabled
+:alphahandling=ClearTransparentPixels
+
+Asset 01;307;54;151;151; 0.5;0.5; 0;0;0;0; 4;151;0;0;0;0;151;151;151; 2;1;2;3;0;1;3
+Asset 02;307;207;151;151; 0.5;0.5; 0;0;0;0; 4;151;0;0;0;0;151;151;151; 2;1;2;3;0;1;3
+Asset 03;154;54;151;151; 0.5;0.5; 0;0;0;0; 4;151;0;0;0;0;151;151;151; 2;1;2;3;0;1;3
+Asset 04;154;207;151;151; 0.5;0.5; 0;0;0;0; 4;151;0;0;0;0;151;151;151; 2;1;2;3;0;1;3
+Asset 05;307;360;151;151; 0.5;0.5; 0;0;0;0; 4;151;0;0;0;0;151;151;151; 2;1;2;3;0;1;3
+Asset 06;154;360;151;151; 0.5;0.5; 0;0;0;0; 4;151;0;0;0;0;151;151;151; 2;1;2;3;0;1;3
+Asset 06_1;1;54;151;151; 0.5;0.5; 0;0;0;0; 4;151;0;0;0;0;151;151;151; 2;1;2;3;0;1;3
+Asset 08;1;207;151;151; 0.5;0.5; 0;0;0;0; 4;151;0;0;0;0;151;151;151; 2;1;2;3;0;1;3
+Asset 09;1;360;151;151; 0.5;0.5; 0;0;0;0; 4;151;0;0;0;0;151;151;151; 2;1;2;3;0;1;3
