@@ -33,7 +33,7 @@ public class GameManager : MonoBehaviour
         QualitySettings.vSyncCount = 0;
 
         //Setup check array
-        _list_Pos_inWinPos = new IPawnable[_finish_parent_trans.childCount];
+        _list_Pos_inWinPos = new IPawnable[_finish_parent_trans.childCount - 1];
     }
 
     private void Update()
@@ -68,7 +68,7 @@ public class GameManager : MonoBehaviour
                     }
                     else
                     {
-                        ScalePawn(pawnable, 1.5f);
+                        ScalePawn(pawnable, 2f);
                         pawnable.IsInWinPos = true;
                         NotMouseClick = false;
                     }
