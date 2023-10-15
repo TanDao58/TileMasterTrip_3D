@@ -1,8 +1,8 @@
 version: 2
 tpsheetFileNames:
-- Assets/04 TEXTURES/fruitcollections-default.tpsheet
+- Assets/Resources/Textures/FruitCollectionSheet.tpsheet
 textureFileNames:
-- Assets/04 TEXTURES/fruitcollections-default.png
+- Assets/Resources/Textures/FruitCollectionSheet.png
 normalmapFileNames:
 - 
 enableDebugOutput: 0
