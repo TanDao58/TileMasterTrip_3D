@@ -83,9 +83,11 @@ public class GameManager : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(_checkPos);
         if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, LayerMask.GetMask("Pawn")))
         {
-            pawnable = raycastHit.collider.transform.GetComponentInChildren<IPawnable>();
             if (_list_Pos_inWinPos[_list_Pos_inWinPos.Length - 1] == null)
+            {
+                pawnable = raycastHit.collider.transform.GetComponentInChildren<IPawnable>();
                 NumAddPawnToWinPos(pawnable);
+            }
             else
             {
                 IsLoseGame = true;
