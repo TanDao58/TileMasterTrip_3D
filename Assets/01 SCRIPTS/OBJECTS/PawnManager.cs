@@ -24,7 +24,7 @@ public class PawnManager : IPawnable
         if (transform.rotation.y != 0)
         {
             Vector3 direction = _pos - transform.position;
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(direction), _speed * 10);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(direction), _speed * 100);
         }
     }
     public override float CalculateAnglePawntoTable(Vector3 _TablePos)

@@ -25,6 +25,12 @@ public class GameManager : MonoBehaviour
     Transform _win_pos_move;
 
     private bool IsLoseGame = false;
+    private bool IsCalculateScore = false;
+
+    private int _player_score = 0;
+    private int _current_combo = 0;
+    private int _time_max_level = 480;
+
     private void Start()
     {
         //Setup android
@@ -35,15 +41,10 @@ public class GameManager : MonoBehaviour
         //Setup check array
         _list_Pos_inWinPos = new IPawnable[_finish_parent_trans.childCount - 1];
     }
-
     private void Update()
     {
         if (!IsLoseGame)
         {
-            if (Input.GetMouseButtonDown(0))
-            {
-                CheckClickPawn(Input.mousePosition);
-            }
             for (int i = 0; i < _check_array._list_pawn_switching.Length; i++)
             {
                 if (_check_array._list_pawn_switching[i] != null && _check_array._list_pawn_switching[i].IsSwitchingPos)
@@ -57,6 +58,15 @@ public class GameManager : MonoBehaviour
                         _check_array._list_pos_switching[i] = null;
                     }
                 }
+            }
+            for (int i = 0; i < _check_array._list_pawn_switching.Length; i++)
+            {
+                if (_check_array._list_pawn_switching[i] != null && _check_array._list_pawn_switching[i].IsSwitchingPos)
+                    return;
+            }
+            if (Input.GetMouseButtonDown(0) && !IsCalculateScore)
+            {
+                CheckClickPawn(Input.mousePosition);
             }
             if (NotMouseClick)
             {
@@ -77,7 +87,6 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-
     public void CheckClickPawn(Vector3 _checkPos)
     {
         Ray ray = Camera.main.ScreenPointToRay(_checkPos);
@@ -104,7 +113,7 @@ public class GameManager : MonoBehaviour
     }
     private void LateUpdate()
     {
-        if (NotRotate)
+        if (pawnable != null && NotRotate)
         {
             RotatePawn(pawnable, _win_pos_move.position);
         }
@@ -129,15 +138,7 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 {
-                    if (_list_Pos_inWinPos[i - 1] != null)
-                    {
-                        _list_Pos_inWinPos[i] = _list_Pos_inWinPos[i - 1];
-
-                        _check_array._list_pawn_switching[i - 1] = _list_Pos_inWinPos[i - 1];
-                        _check_array._list_pos_switching[i - 1] = _finish_parent_trans.GetChild(i);
-                        _list_Pos_inWinPos[i - 1].IsSwitchingPos = true;
-                        _list_Pos_inWinPos[i - 1] = null;
-                    }
+                    SwitchPositionPawn(i - 1, i);
                 }
             }
             _list_Pos_inWinPos[_check_array._start_pos_type_pawn[pawnable.PawnID] + _check_array._count_pawn_in_pos[pawnable.PawnID]] = pawnable;
@@ -152,5 +153,46 @@ public class GameManager : MonoBehaviour
         _win_pos_move = _finish_parent_trans.GetChild(_check_array._start_pos_type_pawn[pawnable.PawnID] + _check_array._count_pawn_in_pos[pawnable.PawnID]);
         _check_array._count_pawn_in_pos[pawnable.PawnID]++;
         _countPawninWinPos++;
+
+        if (_check_array._count_pawn_in_pos[pawnable.PawnID] == 3)
+        {
+            StartCoroutine(DeletePawnAfterScore(pawnable.PawnID, _check_array._start_pos_type_pawn[pawnable.PawnID]));
+            _player_score += (3 + _current_combo);
+        }
+    }
+    public void SwitchPositionPawn(int currentpos, int nextpos)
+    {
+        if (_list_Pos_inWinPos[currentpos] != null)
+        {
+            _list_Pos_inWinPos[nextpos] = _list_Pos_inWinPos[currentpos];
+            _check_array._list_pawn_switching[currentpos] = _list_Pos_inWinPos[currentpos];
+            _check_array._list_pos_switching[currentpos] = _finish_parent_trans.GetChild(nextpos);
+            _list_Pos_inWinPos[currentpos].IsSwitchingPos = true;
+            _list_Pos_inWinPos[currentpos] = null;
+        }
+    }
+    public IEnumerator DeletePawnAfterScore(int pawnID, int pos_delete)
+    {
+        IsCalculateScore = true;
+        yield return new WaitForSeconds(0.5f);
+        Destroy(_list_Pos_inWinPos[pos_delete].gameObject);
+        Destroy(_list_Pos_inWinPos[pos_delete + 1].gameObject);
+        Destroy(_list_Pos_inWinPos[pos_delete + 2].gameObject);
+        _list_Pos_inWinPos[pos_delete] = _list_Pos_inWinPos[pos_delete + 1] = _list_Pos_inWinPos[pos_delete + 2] = null;
+
+        for (int i = pos_delete; i < _list_Pos_inWinPos.Length - 3; i++)
+        {
+            SwitchPositionPawn(i + 3, i);
+        }
+        for (int i = 0; i < _check_array._start_pos_type_pawn.Length; i++)
+        {
+            if (_check_array._start_pos_type_pawn[i] != 0 && _check_array._start_pos_type_pawn[i] > _check_array._start_pos_type_pawn[pawnID])
+            {
+                _check_array._start_pos_type_pawn[i] -= 3;
+            }
+        }
+        _check_array._count_pawn_in_pos[pawnID] = 0;
+        _countPawninWinPos -= 3;
+        IsCalculateScore = false;
     }
 }

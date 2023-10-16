@@ -25,7 +25,7 @@ public class AutoSpawnLevel : MonoBehaviour
     {
         Sprite[] sprites = Resources.LoadAll<Sprite>("Textures");
         Vector3 _spawn_pos = _spawn_trans.position;
-        for (int i = 0; i < sprites.Length * 3; i++)
+        for (int i = 0; i < sprites.Length * 9; i++)
         {
             GameObject g = Instantiate(_Pawn, new Vector3(Random.Range(_spawn_pos.x - _spawndelta_x, _spawn_pos.x + _spawndelta_x), _spawn_pos.y, Random.Range(_spawn_pos.z - _spawndelta_z, _spawn_pos.z + _spawndelta_z)), Quaternion.identity, _spawn_parrent);
 
