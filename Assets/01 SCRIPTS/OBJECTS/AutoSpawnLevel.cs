@@ -11,7 +11,7 @@ public class AutoSpawnLevel : MonoBehaviour
 
     int _spawnIDcount = 0;
 
-    private void Awake()
+    private void Start()
     {
         //pawnData.CreateListPawn(sprites.Length);
         //for (int i = 0; i < pawnData.GetListLength(); i++)
@@ -24,8 +24,12 @@ public class AutoSpawnLevel : MonoBehaviour
     void SpawnLevel()
     {
         Sprite[] sprites = Resources.LoadAll<Sprite>("Textures");
+
+        ScoreManager.Instance.count_img_in_texture = sprites.Length;
+        ScoreManager.Instance.count_pawn_in_game = sprites.Length * 4;
+
         Vector3 _spawn_pos = _spawn_trans.position;
-        for (int i = 0; i < sprites.Length * 9; i++)
+        for (int i = 0; i < sprites.Length * 4; i++)
         {
             GameObject g = Instantiate(_Pawn, new Vector3(Random.Range(_spawn_pos.x - _spawndelta_x, _spawn_pos.x + _spawndelta_x), _spawn_pos.y, Random.Range(_spawn_pos.z - _spawndelta_z, _spawn_pos.z + _spawndelta_z)), Quaternion.identity, _spawn_parrent);
 

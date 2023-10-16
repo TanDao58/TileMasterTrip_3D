@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class CheckArray
 {
-    public int[] _count_pawn_in_pos = new int[100];
-    public int[] _start_pos_type_pawn = new int[100];
+    public int[] _count_pawn_in_pos;
+    public int[] _start_pos_type_pawn;
 
-    public IPawnable[] _list_pawn_switching = new IPawnable[100];
-    public Transform[] _list_pos_switching = new Transform[100];
+    public IPawnable[] _list_pawn_switching;
+    public Transform[] _list_pos_switching;
 }
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] Transform _finish_parent_trans;
-    private readonly CheckArray _check_array = new CheckArray();
+    private CheckArray _check_array;
     private IPawnable[] _list_Pos_inWinPos;
     int _countPawninWinPos = 0;
 
@@ -24,12 +24,8 @@ public class GameManager : MonoBehaviour
     private bool NotRotate;
     Transform _win_pos_move;
 
-    private bool IsLoseGame = false;
     private bool IsCalculateScore = false;
-
-    private int _player_score = 0;
-    private int _current_combo = 0;
-    private int _time_max_level = 480;
+    private int _count_delete_objects = 0;
 
     private void Start()
     {
@@ -40,10 +36,23 @@ public class GameManager : MonoBehaviour
 
         //Setup check array
         _list_Pos_inWinPos = new IPawnable[_finish_parent_trans.childCount - 1];
+        _check_array = new CheckArray
+        {
+            _count_pawn_in_pos = new int[ScoreManager.Instance.count_img_in_texture],
+            _start_pos_type_pawn = new int[ScoreManager.Instance.count_img_in_texture],
+            _list_pawn_switching = new IPawnable[ScoreManager.Instance.count_img_in_texture],
+            _list_pos_switching = new Transform[ScoreManager.Instance.count_img_in_texture]
+
+        };
     }
     private void Update()
     {
-        if (!IsLoseGame)
+        if (_count_delete_objects == ScoreManager.Instance.count_pawn_in_game)
+        {
+            ScoreManager.Instance.IsWinGame = true;
+            return;
+        }
+        if (!ScoreManager.Instance.IsLoseGame)
         {
             for (int i = 0; i < _check_array._list_pawn_switching.Length; i++)
             {
@@ -99,7 +108,7 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                IsLoseGame = true;
+                ScoreManager.Instance.IsLoseGame = true;
                 return;
             }
 
@@ -134,7 +143,7 @@ public class GameManager : MonoBehaviour
             {
                 if (_list_Pos_inWinPos[i] != null)
                 {
-                    return;
+                    ScoreManager.Instance.IsLoseGame = true;
                 }
                 else
                 {
@@ -157,7 +166,7 @@ public class GameManager : MonoBehaviour
         if (_check_array._count_pawn_in_pos[pawnable.PawnID] == 3)
         {
             StartCoroutine(DeletePawnAfterScore(pawnable.PawnID, _check_array._start_pos_type_pawn[pawnable.PawnID]));
-            _player_score += (3 + _current_combo);
+            ScoreManager.Instance.SetScorePlayer(3 + ScoreManager.Instance.GetComboPlayer());
         }
     }
     public void SwitchPositionPawn(int currentpos, int nextpos)
@@ -193,6 +202,7 @@ public class GameManager : MonoBehaviour
         }
         _check_array._count_pawn_in_pos[pawnID] = 0;
         _countPawninWinPos -= 3;
+        _count_delete_objects += 3;
         IsCalculateScore = false;
     }
 }
