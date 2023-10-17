@@ -8,6 +8,8 @@ public class PlayerDataInGame
     public int current_Level = 0;
     public int player_score = 0;
     public int player_coin = 0;
+    public bool is_player_enable_sound = true;
+    public bool is_player_enable_vibration = true;
 }
 
 public class PlayerData : Singleton<PlayerData>
@@ -17,6 +19,19 @@ public class PlayerData : Singleton<PlayerData>
     {
         LoadData();
     }
+    public int GetCurrentLevel() => player_data.current_Level;
+    public void SetSoundStatus(bool status)
+    {
+        player_data.is_player_enable_sound = status;
+        SaveData();
+    }
+    public void SetVibrationStatus(bool status)
+    {
+        player_data.is_player_enable_vibration = status;
+        SaveData();
+    }
+    public bool GetSoundStatus() => player_data.is_player_enable_sound;
+    public bool GetVibrationStatus() => player_data.is_player_enable_vibration;
     public void SetPlayerCoin(int coin)
     {
         player_data.player_coin = coin;

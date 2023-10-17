@@ -13,6 +13,13 @@ public class CheckArray
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Stars Setup")]
+    [SerializeField] UnityEngine.UI.Text _StarText;
+    [SerializeField] Transform _StarText_pos;
+    [SerializeField] GameObject _Star_prefabs;
+    [SerializeField] int _star_count;
+
+    [Space(20)]
     [SerializeField] Transform _finish_parent_trans;
     private CheckArray _check_array;
     private IPawnable[] _list_Pos_inWinPos;
@@ -20,12 +27,16 @@ public class GameManager : MonoBehaviour
 
     IPawnable pawnable;
 
+    private bool IsMouseStartHold = false;
+    IPawnable previous_pawnable;
+
     private bool NotMouseClick;
-    private bool NotRotate;
     Transform _win_pos_move;
 
     private bool IsCalculateScore = false;
     private int _count_delete_objects = 0;
+
+    private bool _ready_lose_game = false;
 
     private void Start()
     {
@@ -42,18 +53,23 @@ public class GameManager : MonoBehaviour
             _start_pos_type_pawn = new int[ScoreManager.Instance.count_img_in_texture],
             _list_pawn_switching = new IPawnable[ScoreManager.Instance.count_img_in_texture],
             _list_pos_switching = new Transform[ScoreManager.Instance.count_img_in_texture]
-
         };
+        SoundManager.Instance.PlaySound("background_music", true);
+        AnimateCoins.Instance.PrepareCoins(_Star_prefabs, _star_count);
     }
     private void Update()
     {
-        if (_count_delete_objects == ScoreManager.Instance.count_pawn_in_game)
+        if (_count_delete_objects != 0 && _count_delete_objects == ScoreManager.Instance.count_pawn_in_game)
         {
             ScoreManager.Instance.IsWinGame = true;
             return;
         }
         if (!ScoreManager.Instance.IsLoseGame)
         {
+            if (Input.GetMouseButtonDown(0))
+                IsMouseStartHold = true;
+            if (IsMouseStartHold)
+                PlaySoundWhenPawnHold();
             for (int i = 0; i < _check_array._list_pawn_switching.Length; i++)
             {
                 if (_check_array._list_pawn_switching[i] != null && _check_array._list_pawn_switching[i].IsSwitchingPos)
@@ -73,9 +89,10 @@ public class GameManager : MonoBehaviour
                 if (_check_array._list_pawn_switching[i] != null && _check_array._list_pawn_switching[i].IsSwitchingPos)
                     return;
             }
-            if (Input.GetMouseButtonDown(0) && !IsCalculateScore)
+            if (Input.GetMouseButtonUp(0) && !IsCalculateScore)
             {
                 CheckClickPawn(Input.mousePosition);
+                IsMouseStartHold = false;
             }
             if (NotMouseClick)
             {
@@ -92,7 +109,24 @@ public class GameManager : MonoBehaviour
                         NotMouseClick = false;
                     }
                 }
-
+            }
+            else
+            {
+                if (_ready_lose_game)
+                    ScoreManager.Instance.IsLoseGame = true;
+            }
+        }
+    }
+    public void PlaySoundWhenPawnHold()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, LayerMask.GetMask("Pawn")))
+        {
+            IPawnable temp = raycastHit.collider.transform.GetComponentInChildren<IPawnable>();
+            if (temp != null && previous_pawnable != temp)
+            {
+                SoundManager.Instance.PlaySound("click_pawn");
+                previous_pawnable = temp;
             }
         }
     }
@@ -104,25 +138,19 @@ public class GameManager : MonoBehaviour
             if (_list_Pos_inWinPos[_list_Pos_inWinPos.Length - 1] == null)
             {
                 pawnable = raycastHit.collider.transform.GetComponentInChildren<IPawnable>();
+                if (_check_array._count_pawn_in_pos[pawnable.PawnID] < 2 && _list_Pos_inWinPos[_list_Pos_inWinPos.Length - 2] != null)
+                    _ready_lose_game = true;
                 NumAddPawnToWinPos(pawnable);
             }
-            else
-            {
-                ScoreManager.Instance.IsLoseGame = true;
-                return;
-            }
-
-            NotRotate = true;
             NotMouseClick = true;
             // setup pawn move
             raycastHit.collider.GetComponent<Rigidbody>().isKinematic = true;
             raycastHit.collider.enabled = false;
-
         }
     }
     private void LateUpdate()
     {
-        if (pawnable != null && NotRotate)
+        if (pawnable != null)
         {
             RotatePawn(pawnable, _win_pos_move.position);
         }
@@ -141,11 +169,7 @@ public class GameManager : MonoBehaviour
         {
             for (int i = _list_Pos_inWinPos.Length - 1; i > _check_array._start_pos_type_pawn[pawnable.PawnID] + _check_array._count_pawn_in_pos[pawnable.PawnID]; i--)
             {
-                if (_list_Pos_inWinPos[i] != null)
-                {
-                    ScoreManager.Instance.IsLoseGame = true;
-                }
-                else
+                if (_list_Pos_inWinPos[i] == null)
                 {
                     SwitchPositionPawn(i - 1, i);
                 }
@@ -162,7 +186,6 @@ public class GameManager : MonoBehaviour
         _win_pos_move = _finish_parent_trans.GetChild(_check_array._start_pos_type_pawn[pawnable.PawnID] + _check_array._count_pawn_in_pos[pawnable.PawnID]);
         _check_array._count_pawn_in_pos[pawnable.PawnID]++;
         _countPawninWinPos++;
-
         if (_check_array._count_pawn_in_pos[pawnable.PawnID] == 3)
         {
             StartCoroutine(DeletePawnAfterScore(pawnable.PawnID, _check_array._start_pos_type_pawn[pawnable.PawnID]));
@@ -187,8 +210,13 @@ public class GameManager : MonoBehaviour
         Destroy(_list_Pos_inWinPos[pos_delete].gameObject);
         Destroy(_list_Pos_inWinPos[pos_delete + 1].gameObject);
         Destroy(_list_Pos_inWinPos[pos_delete + 2].gameObject);
-        _list_Pos_inWinPos[pos_delete] = _list_Pos_inWinPos[pos_delete + 1] = _list_Pos_inWinPos[pos_delete + 2] = null;
 
+        SoundManager.Instance.PlaySound("add_score");
+        if (PlayerData.Instance.GetVibrationStatus())
+            Handheld.Vibrate();
+        AnimateCoins.Instance.AddCoins(_StarText, _StarText_pos.position, _finish_parent_trans.GetChild(pos_delete + 1).position, 3 + ScoreManager.Instance.GetComboPlayer());
+
+        _list_Pos_inWinPos[pos_delete] = _list_Pos_inWinPos[pos_delete + 1] = _list_Pos_inWinPos[pos_delete + 2] = null;
         for (int i = pos_delete; i < _list_Pos_inWinPos.Length - 3; i++)
         {
             SwitchPositionPawn(i + 3, i);
@@ -203,6 +231,11 @@ public class GameManager : MonoBehaviour
         _check_array._count_pawn_in_pos[pawnID] = 0;
         _countPawninWinPos -= 3;
         _count_delete_objects += 3;
+        ScoreManager.Instance.SetComboPlayer();
         IsCalculateScore = false;
+    }
+    public void ResetGame()
+    {
+        
     }
 }

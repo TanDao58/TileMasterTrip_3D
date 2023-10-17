@@ -1,8 +1,11 @@
 version: 2
 tpsheetFileNames:
+- Assets/04 TEXTURES/UI/UI-packer.tpsheet
 - Assets/Resources/Textures/FruitCollectionSheet.tpsheet
 textureFileNames:
+- Assets/04 TEXTURES/UI/UI-packer.png
 - Assets/Resources/Textures/FruitCollectionSheet.png
 normalmapFileNames:
+- 
 - 
 enableDebugOutput: 0
