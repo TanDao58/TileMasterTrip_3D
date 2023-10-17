@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CheckArray
@@ -21,6 +22,9 @@ public class GameManager : MonoBehaviour
 
     [Space(20)]
     [SerializeField] Transform _finish_parent_trans;
+    [SerializeField] AutoSpawnLevel _spawn_level;
+    public bool Is_Spawning_Level = false;
+
     private CheckArray _check_array;
     private IPawnable[] _list_Pos_inWinPos;
     int _countPawninWinPos = 0;
@@ -36,8 +40,7 @@ public class GameManager : MonoBehaviour
     private bool IsCalculateScore = false;
     private int _count_delete_objects = 0;
 
-    private bool _ready_lose_game = false;
-
+    public bool _ready_lose_game = false;
     private void Start()
     {
         //Setup android
@@ -49,12 +52,11 @@ public class GameManager : MonoBehaviour
         _list_Pos_inWinPos = new IPawnable[_finish_parent_trans.childCount - 1];
         _check_array = new CheckArray
         {
-            _count_pawn_in_pos = new int[ScoreManager.Instance.count_img_in_texture],
-            _start_pos_type_pawn = new int[ScoreManager.Instance.count_img_in_texture],
-            _list_pawn_switching = new IPawnable[ScoreManager.Instance.count_img_in_texture],
-            _list_pos_switching = new Transform[ScoreManager.Instance.count_img_in_texture]
+            _count_pawn_in_pos = new int[_spawn_level.GetLengthSprites()],
+            _start_pos_type_pawn = new int[_spawn_level.GetLengthSprites()],
+            _list_pawn_switching = new IPawnable[_spawn_level.GetLengthSprites()],
+            _list_pos_switching = new Transform[_spawn_level.GetLengthSprites()]
         };
-        SoundManager.Instance.PlaySound("background_music", true);
         AnimateCoins.Instance.PrepareCoins(_Star_prefabs, _star_count);
     }
     private void Update()
@@ -89,7 +91,7 @@ public class GameManager : MonoBehaviour
                 if (_check_array._list_pawn_switching[i] != null && _check_array._list_pawn_switching[i].IsSwitchingPos)
                     return;
             }
-            if (Input.GetMouseButtonUp(0) && !IsCalculateScore)
+            if (Input.GetMouseButtonUp(0) && !IsCalculateScore && !Is_Spawning_Level)
             {
                 CheckClickPawn(Input.mousePosition);
                 IsMouseStartHold = false;
@@ -234,8 +236,22 @@ public class GameManager : MonoBehaviour
         ScoreManager.Instance.SetComboPlayer();
         IsCalculateScore = false;
     }
-    public void ResetGame()
+    public void ResetData()
     {
-        
+        _countPawninWinPos = 0;
+        _count_delete_objects = 0;
+        for (int i = 0; i < _list_Pos_inWinPos.Length; i++)
+        {
+            _list_Pos_inWinPos[i] = null;
+        }
+        for (int i = 0; i < _check_array._count_pawn_in_pos.Length; i++)
+        {
+            _check_array._count_pawn_in_pos[i] = 0;
+        }
+        for (int i = 0; i < _check_array._start_pos_type_pawn.Length; i++)
+        {
+            _check_array._start_pos_type_pawn[i] = 0;
+        }
+        _ready_lose_game = false;
     }
 }

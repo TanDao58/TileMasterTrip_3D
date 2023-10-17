@@ -12,32 +12,48 @@ public class SoundManager : Singleton<SoundManager>
     List<DestroySound> AudioS = new List<DestroySound>();
     [SerializeField]
     List<AudioClip> SoundFiles = new List<AudioClip>();
-    void Start(){
+    void Start()
+    {
         Object[] file = Resources.LoadAll("Sounds", typeof(AudioClip));
-        foreach(Object o in file){
+        foreach (Object o in file)
+        {
             SoundFiles.Add((AudioClip)o);
         }
     }
 
     public void PlaySound(string nameSound, bool isRepeat = false)
     {
-        foreach(AudioClip A in SoundFiles){
-            if(A.name.ToLower() != nameSound.ToLower())
-                continue;
-            AudioSource source = GetAudioSource();
+        if (PlayerData.Instance.GetSoundStatus())
+        {
+            foreach (AudioClip A in SoundFiles)
+            {
+                if (A.name.ToLower() != nameSound.ToLower())
+                    continue;
+                AudioSource source = GetAudioSource();
 
-            source.clip = A;
-            source.loop = isRepeat;
-            source.gameObject.SetActive(true);
+                source.clip = A;
+                source.loop = isRepeat;
+                source.gameObject.SetActive(true);
+            }
         }
     }
-    AudioSource GetAudioSource(){
-        foreach(DestroySound D in AudioS){
-            if(D.gameObject.activeSelf)
+    public void DisableSound()
+    {
+        for(int i = 0;i < this.gameObject.transform.childCount; i++)
+        {
+            Destroy(this.gameObject.transform.GetChild(i).gameObject);
+        }
+        AudioS.Clear();
+    }
+    AudioSource GetAudioSource()
+    {
+        foreach (DestroySound D in AudioS)
+        {
+            if (D.gameObject.activeSelf)
                 continue;
             return D.Audio;
         }
-        DestroySound D2 = Instantiate(Audio_Prefab,this.transform.position,Quaternion.identity,this.transform).GetComponent<DestroySound>();
+        DestroySound D2 = Instantiate(Audio_Prefab, this.transform.position, Quaternion.identity, this.transform).GetComponent<DestroySound>();
         AudioS.Add(D2);
         D2.gameObject.SetActive(false);
 

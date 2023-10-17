@@ -19,6 +19,11 @@ public class PlayerData : Singleton<PlayerData>
     {
         LoadData();
     }
+    private void Start()
+    {
+        if (GetSoundStatus())
+            SoundManager.Instance.PlaySound("background_music", true);
+    }
     public int GetCurrentLevel() => player_data.current_Level;
     public void SetSoundStatus(bool status)
     {
@@ -34,7 +39,7 @@ public class PlayerData : Singleton<PlayerData>
     public bool GetVibrationStatus() => player_data.is_player_enable_vibration;
     public void SetPlayerCoin(int coin)
     {
-        player_data.player_coin = coin;
+        player_data.player_coin += coin;
         SaveData();
     }
     public int GetPlayerCoin()

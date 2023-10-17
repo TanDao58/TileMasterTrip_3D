@@ -12,11 +12,6 @@ public class ScoreManager : Singleton<ScoreManager>
 
     private float _time_max_level = 480;
 
-    [Header("Coins Setup")]
-    [SerializeField] UnityEngine.UI.Text _CoinText;
-    [SerializeField] Transform _CoinText_pos, _StartCoin_pos;
-    [SerializeField] GameObject _Coin_prefabs;
-    [SerializeField] int _coin_count;
 
     [Header("Setup Time Combo")]
     [SerializeField] GameObject ProgressBar;
@@ -37,16 +32,16 @@ public class ScoreManager : Singleton<ScoreManager>
     {
         Coin_txt.text = PlayerData.Instance.GetPlayerCoin().ToString();
         _time_end_combo.value = _time_end_combo.maxValue = _default_time_combo;
-        AnimateCoins.Instance.PrepareCoins(_Coin_prefabs, 100);
     }
-
     private void Update()
     {
         if (!IsStopGame)
         {
+            EndPanel.SetActive(false);
             if (IsWinGame)
             {
                 PlayerData.Instance.SetScore(_player_score);
+                SetCoinsPlayer();
                 WinPanel.SetActive(true);
                 IsStopGame = true;
                 return;
@@ -98,11 +93,14 @@ public class ScoreManager : Singleton<ScoreManager>
         _current_combo = 0;
         _player_score = 0;
         _time_end_combo.value = _time_end_combo.maxValue = _default_time_combo;
+        IsWinGame = false;
+        IsStopGame = false;
+        IsLoseGame = false;
     }
     public void SetCoinsPlayer()
     {
         PlayerData.Instance.SetPlayerCoin(100);
-        AnimateCoins.Instance.AddCoins(_CoinText, _CoinText_pos.position, _StartCoin_pos.position, 100);
+        Coin_txt.text = PlayerData.Instance.GetPlayerCoin().ToString();
     }
     public void SetScorePlayer(int score)
     {
