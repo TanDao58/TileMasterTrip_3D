@@ -23,7 +23,6 @@ public class GameManager : MonoBehaviour
     [Space(20)]
     [SerializeField] Transform _finish_parent_trans;
     [SerializeField] AutoSpawnLevel _spawn_level;
-    public bool Is_Spawning_Level = false;
 
     private CheckArray _check_array;
     private IPawnable[] _list_Pos_inWinPos;
@@ -40,7 +39,7 @@ public class GameManager : MonoBehaviour
     private bool IsCalculateScore = false;
     private int _count_delete_objects = 0;
 
-    public bool _ready_lose_game = false;
+    private bool _ready_lose_game = false;
     private void Start()
     {
         //Setup android
@@ -91,7 +90,7 @@ public class GameManager : MonoBehaviour
                 if (_check_array._list_pawn_switching[i] != null && _check_array._list_pawn_switching[i].IsSwitchingPos)
                     return;
             }
-            if (Input.GetMouseButtonUp(0) && !IsCalculateScore && !Is_Spawning_Level)
+            if (Input.GetMouseButtonUp(0) && !IsCalculateScore)
             {
                 CheckClickPawn(Input.mousePosition);
                 IsMouseStartHold = false;

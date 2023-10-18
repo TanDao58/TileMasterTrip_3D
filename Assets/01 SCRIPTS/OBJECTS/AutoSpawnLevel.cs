@@ -23,7 +23,6 @@ public class AutoSpawnLevel : MonoBehaviour
     {
         ScoreManager.Instance.count_pawn_in_game = level * 3;
         Vector3 _spawn_pos = _spawn_trans.position;
-        ResetLevel();
         for (int i = 0; i < ScoreManager.Instance.count_pawn_in_game; i++)
         {
             GameObject g = Instantiate(_Pawn, new Vector3(Random.Range(_spawn_pos.x - _spawndelta_x, _spawn_pos.x + _spawndelta_x), _spawn_pos.y, Random.Range(_spawn_pos.z - _spawndelta_z, _spawn_pos.z + _spawndelta_z)), Quaternion.identity, _spawn_parrent);
@@ -37,7 +36,7 @@ public class AutoSpawnLevel : MonoBehaviour
                 _spawnIDcount = 0;
         }
     }
-    private void ResetLevel()
+    public void ResetLevel()
     {
         if (_spawn_parrent != null && _spawn_parrent.childCount > 0)
         {

@@ -51,9 +51,10 @@ public class PlayerData : Singleton<PlayerData>
         player_data.current_Level = level;
         SaveData();
     }
+    public int GetScore() => player_data.player_score;
     public void SetScore(int score)
     {
-        player_data.player_score = score;
+        player_data.player_score += score;
         SaveData();
     }
     public void SaveData()

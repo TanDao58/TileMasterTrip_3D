@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class ScoreManager : Singleton<ScoreManager>
 {
     [SerializeField] GameObject EndPanel, WinPanel, LosePanel;
-    [SerializeField] Text Coin_txt, Time_txt, Combo_txt;
+    [SerializeField] Text Star_txt, Coin_txt, Time_txt, Combo_txt;
     private int _player_score = 0;
     private int _current_combo = 0;
 
@@ -91,7 +91,9 @@ public class ScoreManager : Singleton<ScoreManager>
     {
         _time_max_level = 480;
         _current_combo = 0;
-        _player_score = 0;
+        SetScorePlayer(-_player_score);
+        Star_txt.text = _player_score.ToString();
+        AnimateCoins.Instance.Coins = 0;
         _time_end_combo.value = _time_end_combo.maxValue = _default_time_combo;
         IsWinGame = false;
         IsStopGame = false;
@@ -104,7 +106,7 @@ public class ScoreManager : Singleton<ScoreManager>
     }
     public void SetScorePlayer(int score)
     {
-        _player_score += score;
+        _player_score += score; 
     }
     public void SetComboPlayer()
     {
