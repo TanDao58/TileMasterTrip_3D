@@ -24,6 +24,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] Transform _finish_parent_trans;
     [SerializeField] AutoSpawnLevel _spawn_level;
 
+    [Header("Main Panel")]
+    [SerializeField] GameObject MainPanel;
     private CheckArray _check_array;
     private IPawnable[] _list_Pos_inWinPos;
     int _countPawninWinPos = 0;

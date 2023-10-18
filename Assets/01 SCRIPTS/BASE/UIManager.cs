@@ -69,7 +69,6 @@ public class UIManager : MonoBehaviour
             });
             level.transform.GetChild(0).GetComponent<Text>().text = (i + 1).ToString();
         }
-
         HomeButton.onClick.AddListener(() =>
         {
             HomePanel.SetActive(true);
